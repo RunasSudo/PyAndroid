@@ -149,7 +149,8 @@ public class BytecodeLoader {
                 File outDir = MainActivity.context.getCacheDir();
                 File result = new File(outDir, name + ".jar");
                 
-                if (!result.exists()) {
+                // Only cache builtin modules
+                if (!name.endsWith("$py") || !result.exists()) {
                     // Convert the class file to dex
                     byte[] dexData = Dexer.runMonoDex(filename, data);
                     
