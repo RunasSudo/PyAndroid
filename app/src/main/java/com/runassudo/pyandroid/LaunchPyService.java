@@ -27,6 +27,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -70,8 +71,15 @@ public class LaunchPyService extends IntentService {
 			PythonInterpreter interpreter = new PythonInterpreter(localsDict);
 			interpreter.execfile(new FileInputStream(mainfile));
 		} catch (Exception e) {
-			Toast.makeText(MainActivity.context, "An error occurred!", Toast.LENGTH_LONG).show();
-            Log.e("PyAndroid", "An error occurred!", e);
+			mHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(LaunchPyService.this, "An error occurred!", Toast.LENGTH_LONG).show();
+				}
+			});
+			Log.e("PyAndroid", "An error occurred!", e);
+			appendLog("An error occurred!");
+			appendLog(Log.getStackTraceString(e));
 		}
 	}
 	
@@ -79,12 +87,8 @@ public class LaunchPyService extends IntentService {
 		return mHandler;
 	}
 	
-	public void showToast(final String text) {
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				Toast.makeText(LaunchPyService.this, text, Toast.LENGTH_LONG).show();
-			} 
-		}); 
+	public void appendLog(String text) {
+		Intent localIntent = new Intent("com.runassudo.pyandroid.UPDATE_LOG").putExtra("com.runassudo.pyandroid.TEXT", text);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
 	}
 }

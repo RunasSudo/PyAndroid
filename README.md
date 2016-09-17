@@ -10,16 +10,14 @@ A proof-of-concept of using [Jython](http://jython.org/) to integrate powerful P
 
 ## Example
 
+    __service__.appendLog("Script started")
+    
     from android.util import Log
     Log.d("PyAndroid", "Hello from Python!")
     
     # Toasts must be launched from the main thread
-    from java.lang import Runnable
-    class Cheers(Runnable):
-    	def run(self):
-    		from android.widget import Toast
-    		Toast.makeText(__service__, "Here's to you!", Toast.LENGTH_LONG).show()
-    __service__.getHandler().post(Cheers())
-    
-    # Thank god for helper functions
-    __service__.showToast("Champagne for my real friends and real pain for my sham friends!");
+    # From Jython 2.5.2, Python functions can be directly passed to Java methods that take a single method interface (e.g. Runnable)
+    def cheers():
+    	from android.widget import Toast
+    	Toast.makeText(__service__, "Here's looking at you!", Toast.LENGTH_LONG).show()
+    __service__.getHandler().post(cheers)
