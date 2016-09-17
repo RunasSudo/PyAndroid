@@ -146,19 +146,20 @@ public class BytecodeLoader {
             }
             
             try {
-                // Convert the class file to dex
-                byte[] dexData = Dexer.runMonoDex(filename, data);
-                
-                // Write the dex to a temp file and load it
                 File outDir = MainActivity.context.getCacheDir();
-                File result = File.createTempFile("Generated", ".jar", outDir);
-                result.deleteOnExit();
+                File result = new File(outDir, name + ".jar");
                 
-                JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(result));
-                jarOut.putNextEntry(new JarEntry("classes.dex"));
-                jarOut.write(dexData);
-                jarOut.closeEntry();
-                jarOut.close();
+                if (!result.exists()) {
+                    // Convert the class file to dex
+                    byte[] dexData = Dexer.runMonoDex(filename, data);
+                    
+                    // Write the dex to a temp file and load it
+                    JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(result));
+                    jarOut.putNextEntry(new JarEntry("classes.dex"));
+                    jarOut.write(dexData);
+                    jarOut.closeEntry();
+                    jarOut.close();
+                }
                 
                 return ((ClassLoader) Class.forName("dalvik.system.DexClassLoader")
                     .getConstructor(String.class, String.class, String.class, ClassLoader.class)
