@@ -17,21 +17,18 @@
 
 package com.runassudo.pyandroid;
 
-import org.python.util.PythonInterpreter;
-
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 // Changes necessary:
 // Compatibility headaches
@@ -51,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
 		
 		setContentView(R.layout.activity_main);
 		
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-			launchMain();
-		} else {
-			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				launchMain();
+			}
+		});
+		AlertDialog dialog = builder.show();
 	}
 	
 	@Override
@@ -70,14 +69,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	public void launchMain() {
-		try {
-			File mainfile = new File(Environment.getExternalStorageDirectory(), "PyAndroid/main.py");
-			
-			PythonInterpreter interpreter = new PythonInterpreter();
-			interpreter.execfile(new FileInputStream(mainfile));
-		} catch (Exception e) {
-			Toast.makeText(context, "An error occurred!", Toast.LENGTH_LONG).show();
-            Log.e("PyAndroid", "An error occurred!", e);
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+			return;
 		}
+		
+		Intent mServiceIntent = new Intent(this, LaunchPyService.class);
+		startService(mServiceIntent);
 	}
 }
