@@ -145,10 +145,10 @@ public class BytecodeLoader {
                 }
             }
             
+            File outDir = MainActivity.context.getCacheDir();
+            File result = new File(outDir, name + ".jar");
+            
             try {
-                File outDir = MainActivity.context.getCacheDir();
-                File result = new File(outDir, name + ".jar");
-                
                 // Only cache builtin modules
                 if (!name.endsWith("$py") || !result.exists()) {
                     // Convert the class file to dex
@@ -167,6 +167,10 @@ public class BytecodeLoader {
                     .newInstance(result.getPath(), outDir.getAbsolutePath(), null, imp.getSyspathJavaLoader())).loadClass(name);
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            } finally {
+                if (!name.endsWith("$py")) {
+                    result.delete();
+                }
             }
             
             //Class<?> c = defineClass(name, data, 0, data.length, getClass().getProtectionDomain());
