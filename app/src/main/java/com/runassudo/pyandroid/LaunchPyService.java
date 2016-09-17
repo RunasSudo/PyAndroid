@@ -17,16 +17,22 @@
 
 package com.runassudo.pyandroid;
 
+import org.python.core.Py;
+import org.python.core.PyDictionary;
+import org.python.core.PyObject;
+import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class LaunchPyService extends IntentService {
@@ -34,23 +40,51 @@ public class LaunchPyService extends IntentService {
 		super("LaunchPyService");
 	}
 	
+	Handler mHandler;
+	
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		mHandler = new Handler();
+	} 
+	
 	@Override
 	protected void onHandleIntent(Intent workIntent) {
 		try {
 			File mainfile = new File(Environment.getExternalStorageDirectory(), "PyAndroid/main.py");
 			
+			// Set Python properties
 			Properties props = new Properties();
 			props.put("python.import.site", "false");
 			props.put("python.security.respectJavaAccessibility", "false");
 			props.put("python.verbose", "debug");
 			Properties preprops = System.getProperties();
-			PythonInterpreter.initialize(preprops, props, new String[0]);
 			
-			PythonInterpreter interpreter = new PythonInterpreter();
+			// Pass ourselves in
+			HashMap<PyObject,PyObject> localsMap = new HashMap<PyObject,PyObject>();
+			localsMap.put(new PyString("__service__"), Py.java2py(this));
+			PyDictionary localsDict = new PyDictionary(localsMap);
+			
+			// Launch Python
+			PythonInterpreter.initialize(preprops, props, new String[0]);
+			PythonInterpreter interpreter = new PythonInterpreter(localsDict);
 			interpreter.execfile(new FileInputStream(mainfile));
 		} catch (Exception e) {
 			Toast.makeText(MainActivity.context, "An error occurred!", Toast.LENGTH_LONG).show();
             Log.e("PyAndroid", "An error occurred!", e);
 		}
+	}
+	
+	public Handler getHandler() {
+		return mHandler;
+	}
+	
+	public void showToast(final String text) {
+		mHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(LaunchPyService.this, text, Toast.LENGTH_LONG).show();
+			} 
+		}); 
 	}
 }
