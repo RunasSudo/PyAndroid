@@ -32,6 +32,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,12 +47,18 @@ public class MainActivity extends AppCompatActivity {
 	
 	public static Context context;
 	
+	TextView script_log;
+	ScrollView script_log_scroll;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		context = getApplicationContext();
 		
 		setContentView(R.layout.activity_main);
+		
+		script_log = (TextView) findViewById(R.id.script_log);
+		script_log_scroll = (ScrollView) findViewById(R.id.script_log_scroll);
 		
 		LocalBroadcastManager.getInstance(this).registerReceiver(new ResponseReceiver(), new IntentFilter("com.runassudo.pyandroid.UPDATE_LOG"));
 	}
@@ -85,8 +92,13 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String text = intent.getExtras().getString("com.runassudo.pyandroid.TEXT");
-			TextView script_log = (TextView) findViewById(R.id.script_log);
 			script_log.setText(script_log.getText() + "\n" + text);
+			script_log_scroll.post(new Runnable() {
+				@Override
+				public void run() {
+					script_log_scroll.fullScroll(ScrollView.FOCUS_DOWN);
+				}
+			});
 		}
 	}
 }
