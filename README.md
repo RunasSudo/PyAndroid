@@ -8,7 +8,9 @@ A proof-of-concept of using [Jython](http://jython.org/) to integrate powerful P
 * Jython 2.5.4 was the last version to support Java 6, which Android is based on. When using the *os* library, newer versions (on Android and other Unix-like systems) require the *java.nio.file* library, which is not available on Android. However, the libraries used in Jython 2.5.4 are funky, and `dx` doesn't like them. To overcome this, I removed the *org/python/modules/posix* directory from the Jython 2.7.0 distribution JAR and included the 2.5.4 implementation in the source tree.
 * The hard-coded entry-point of scripts is the */sdcard/PyAndroid/main.py* file.
 
-## Example
+## Examples
+
+### Basic overview
 
     __service__.appendLog("Script started")
     
@@ -21,3 +23,30 @@ A proof-of-concept of using [Jython](http://jython.org/) to integrate powerful P
     	from android.widget import Toast
     	Toast.makeText(__service__, "Here's looking at you!", Toast.LENGTH_LONG).show()
     __service__.getHandler().post(cheers)
+
+### Setting alarms
+
+    from com.runassudo.pyandroid import PyService
+    
+    from android.app import PendingIntent
+    from android.content import Context
+    from android.content import Intent
+    
+    from java.lang import Runnable
+    from java.lang import System
+    
+    def sayHi():
+    	def cheers():
+    		from android.widget import Toast
+    		Toast.makeText(__service__, "Here's looking at you!", Toast.LENGTH_LONG).show()
+    	__service__.getHandler().post(cheers)
+    __service__.getApplicationContext().putCallback('sayHi', sayHi)
+    
+    alarmMgr = __service__.getSystemService(Context.ALARM_SERVICE)
+    intent = Intent(__service__, PyService).putExtra('com.runassudo.pyandroid.CALLBACK', 'sayHi')
+    pendingIntent = PendingIntent.getService(__service__, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+    
+    __service__.appendLog('Setting alarm')
+    
+    curr = System.currentTimeMillis()
+    alarmMgr.setExact(alarmMgr.RTC_WAKEUP, curr + 1000, pendingIntent)

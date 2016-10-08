@@ -47,7 +47,7 @@ public class LaunchPyService extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 		mHandler = new Handler();
-	} 
+	}
 	
 	@Override
 	protected void onHandleIntent(Intent workIntent) {
