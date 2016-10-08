@@ -23,11 +23,15 @@ import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
 
-import android.app.IntentService;
+import android.R;
+import android.app.Notification;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,11 +40,7 @@ import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class LaunchPyService extends IntentService {
-	public LaunchPyService() {
-		super("LaunchPyService");
-	}
-	
+public class LaunchPyService extends Service {
 	Handler mHandler;
 	
 	@Override
@@ -50,7 +50,10 @@ public class LaunchPyService extends IntentService {
 	}
 	
 	@Override
-	protected void onHandleIntent(Intent workIntent) {
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// Foreground ourselves
+		startForeground(1, new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_dialog_info).setContentTitle("PyAndroid").setContentText("PyAndroid is running.").build());
+		
 		try {
 			File mainfile = new File(Environment.getExternalStorageDirectory(), "PyAndroid/main.py");
 			
@@ -80,7 +83,16 @@ public class LaunchPyService extends IntentService {
 			Log.e("PyAndroid", "An error occurred!", e);
 			appendLog("An error occurred!");
 			appendLog(Log.getStackTraceString(e));
+			
+			stopSelf();
 		}
+		
+		return Service.START_REDELIVER_INTENT;
+	}
+	
+	@Override
+	public IBinder onBind(Intent intent) {
+		return null;
 	}
 	
 	public Handler getHandler() {
