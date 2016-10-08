@@ -19,6 +19,7 @@ package com.runassudo.pyandroid;
 
 import org.python.core.Py;
 import org.python.core.PyDictionary;
+import org.python.core.PyFunction;
 import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
@@ -95,9 +96,9 @@ public class LaunchPyService extends Service {
 		super.onDestroy();
 		
 		try {
-			Runnable callbackR = ((PyAndroidApplication) getApplicationContext()).getCallbacks().get("_stop");
+			PyFunction callbackR = ((PyAndroidApplication) getApplicationContext()).callbacks.get("_stop");
 			if (callbackR != null) {
-				callbackR.run();
+				callbackR.__call__();
 			}
 		} catch (Exception e) {
 			Log.w("PyAndroid", "An error occurred while stopping.", e);

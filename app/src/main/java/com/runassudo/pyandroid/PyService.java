@@ -17,6 +17,8 @@
 
 package com.runassudo.pyandroid;
 
+import org.python.core.PyFunction;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
@@ -41,9 +43,9 @@ public class PyService extends IntentService {
 		try {
 			String callback = workIntent.getExtras().getString("com.runassudo.pyandroid.CALLBACK");
 			
-			Runnable callbackR = ((PyAndroidApplication) getApplicationContext()).getCallbacks().get(callback);
+			PyFunction callbackR = ((PyAndroidApplication) getApplicationContext()).callbacks.get(callback);
 			if (callbackR != null) {
-				callbackR.run();
+				callbackR.__call__();
 			} else {
 				throw new NullPointerException("Tried to call undefined callback " + callback);
 			}

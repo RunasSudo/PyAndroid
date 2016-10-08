@@ -17,19 +17,12 @@
 
 package com.runassudo.pyandroid;
 
+import org.python.core.PyFunction;
+
 import android.app.Application;
 
 import java.util.HashMap;
 
 public class PyAndroidApplication extends Application {
-	HashMap<String, Runnable> callbacks = new HashMap<String, Runnable>();
-	
-	public HashMap<String, Runnable> getCallbacks() {
-		return callbacks;
-	}
-	
-	// Helper method to cast functions to Runnables
-	public void putCallback(String name, Runnable callback) {
-		callbacks.put(name, callback);
-	}
+	public HashMap<String, PyFunction> callbacks = new HashMap<String, PyFunction>();
 }
