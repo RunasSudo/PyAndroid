@@ -91,6 +91,22 @@ public class LaunchPyService extends Service {
 	}
 	
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		try {
+			Runnable callbackR = ((PyAndroidApplication) getApplicationContext()).getCallbacks().get("_stop");
+			if (callbackR != null) {
+				callbackR.run();
+			}
+		} catch (Exception e) {
+			Log.w("PyAndroid", "An error occurred while stopping.", e);
+			appendLog("An error occurred while stopping.");
+			appendLog(Log.getStackTraceString(e));
+		}
+	}
+	
+	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}

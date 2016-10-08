@@ -23,6 +23,8 @@ A proof-of-concept of using [Jython](http://jython.org/) to integrate powerful P
     	from android.widget import Toast
     	Toast.makeText(__service__, "Here's looking at you!", Toast.LENGTH_LONG).show()
     __service__.getHandler().post(cheers)
+    
+    __service__.stopSelf()
 
 ### Setting alarms
 
@@ -35,18 +37,30 @@ A proof-of-concept of using [Jython](http://jython.org/) to integrate powerful P
     from java.lang import Runnable
     from java.lang import System
     
+    # Define the function to call when the alarm is triggered
     def sayHi():
     	def cheers():
     		from android.widget import Toast
     		Toast.makeText(__service__, "Here's looking at you!", Toast.LENGTH_LONG).show()
     	__service__.getHandler().post(cheers)
+    
+    # Register this function with PyAndroid
     __service__.getApplicationContext().putCallback('sayHi', sayHi)
     
-    alarmMgr = __service__.getSystemService(Context.ALARM_SERVICE)
+    # Create a PendingIntent to call this function
     intent = Intent(__service__, PyService).putExtra('com.runassudo.pyandroid.CALLBACK', 'sayHi')
     pendingIntent = PendingIntent.getService(__service__, 1, intent, PendingIntent.FLAG_CANCEL_CURRENT)
     
     __service__.appendLog('Setting alarm')
     
+    alarmMgr = __service__.getSystemService(Context.ALARM_SERVICE)
     curr = System.currentTimeMillis()
-    alarmMgr.setExact(alarmMgr.RTC_WAKEUP, curr + 1000, pendingIntent)
+    alarmMgr.setExact(alarmMgr.RTC_WAKEUP, curr + 5000, pendingIntent)
+    
+    # Called on service stop
+    def handleStop():
+    	__service__.appendLog('Stopping')
+    	alarmMgr.cancel(pendingIntent)
+    __service__.getApplicationContext().putCallback('_stop', handleStop)
+    
+    # Note that because __service__.stopSelf() is not called, this script will never technically exit automatically

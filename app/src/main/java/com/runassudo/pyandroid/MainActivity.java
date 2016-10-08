@@ -63,22 +63,26 @@ public class MainActivity extends AppCompatActivity {
 		LocalBroadcastManager.getInstance(this).registerReceiver(new ResponseReceiver(), new IntentFilter("com.runassudo.pyandroid.UPDATE_LOG"));
 	}
 	
-	public void onLaunchButtonClick(View v) {
-		launchMain();
+	public void onStartButtonClick(View v) {
+		startMain();
+	}
+	
+	public void onStopButtonClick(View v) {
+		stopMain();
 	}
 	
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 		if (requestCode == 0) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				launchMain();
+				startMain();
 			} else {
 				Toast.makeText(context, "Permission denied!", Toast.LENGTH_LONG).show();
 			}
 		}
 	}
 	
-	public void launchMain() {
+	public void startMain() {
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
 			return;
@@ -86,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
 		
 		Intent mServiceIntent = new Intent(this, LaunchPyService.class);
 		startService(mServiceIntent);
+	}
+	
+	public void stopMain() {
+		Intent mServiceIntent = new Intent(this, LaunchPyService.class);
+		stopService(mServiceIntent);
 	}
 	
 	class ResponseReceiver extends BroadcastReceiver {

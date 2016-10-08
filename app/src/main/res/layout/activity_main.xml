@@ -10,11 +10,21 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context="com.runassudo.pyandroid.MainActivity">
 	
-	<Button
-		android:layout_width="wrap_content"
+	<LinearLayout
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Launch"
-		android:onClick="onLaunchButtonClick" />
+		android:orientation="horizontal">
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Start"
+			android:onClick="onStartButtonClick" />
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Stop"
+			android:onClick="onStopButtonClick" />
+	</LinearLayout>
 	
 	<ScrollView
 		android:id="@+id/script_log_scroll"
@@ -25,6 +35,6 @@
 			android:id="@+id/script_log"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="PyAndroid: Press Launch to begin execution." />
+			android:text="PyAndroid: Press Start to begin execution." />
 	</ScrollView>
 </LinearLayout>
