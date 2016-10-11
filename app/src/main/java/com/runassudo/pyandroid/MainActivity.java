@@ -36,6 +36,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 // Changes necessary:
 // Compatibility headaches
 // 2.7.0 doesn't support Java 6. 2.5.4 has funky class files.
@@ -95,10 +98,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	class ResponseReceiver extends BroadcastReceiver {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String text = intent.getExtras().getString("com.runassudo.pyandroid.TEXT");
-			script_log.setText(script_log.getText() + "\n" + text);
+			script_log.setText(script_log.getText() + "\n" + sdf.format(new Date()) + ": " + text);
 			script_log_scroll.post(new Runnable() {
 				@Override
 				public void run() {
