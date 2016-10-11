@@ -39,8 +39,10 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.text.SimpleDateFormat;
 
 public class LaunchPyService extends Service {
 	Handler mHandler;
@@ -127,9 +129,11 @@ public class LaunchPyService extends Service {
 		return mHandler;
 	}
 	
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	public void appendLog(String text) {
 		Log.i("PyAndroid", text);
-		Intent localIntent = new Intent("com.runassudo.pyandroid.UPDATE_LOG").putExtra("com.runassudo.pyandroid.TEXT", text);
+		Intent localIntent = new Intent("com.runassudo.pyandroid.UPDATE_LOG").putExtra("com.runassudo.pyandroid.TEXT", sdf.format(new Date()) + ": " + text);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
 	}
 }
