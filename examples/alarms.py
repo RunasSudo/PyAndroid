@@ -16,12 +16,17 @@
 
 from com.runassudo.pyandroid import PyService
 
+from android import R
 from android.app import PendingIntent
 from android.content import Context
 from android.content import Intent
+from android.support.v4.app import NotificationCompat
 
 from java.lang import Runnable
 from java.lang import System
+
+# Foreground ourselves to prevent being killed
+__service__.startForeground(1, NotificationCompat.Builder(__service__).setSmallIcon(R.drawable.ic_dialog_info).setContentTitle('PyAndroid').setContentText('PyAndroid is running.').build())
 
 # Define the function to call when the alarm is triggered
 def sayHi():

@@ -64,9 +64,6 @@ public class LaunchPyService extends Service {
 		}
 		isRunning = true;
 		
-		// Foreground ourselves
-		startForeground(1, new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_dialog_info).setContentTitle("PyAndroid").setContentText("PyAndroid is running.").build());
-		
 		startReason = intent.getExtras().getString("com.runassudo.pyandroid.START_REASON");
 		
 		try {
