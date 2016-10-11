@@ -18,7 +18,7 @@
 
 package org.python.core;
 
-import com.runassudo.pyandroid.MainActivity;
+import com.runassudo.pyandroid.LaunchPyService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -145,7 +145,7 @@ public class BytecodeLoader {
                 }
             }
             
-            File outDir = MainActivity.context.getCacheDir();
+            File outDir = LaunchPyService.context.getCacheDir();
             File result = new File(outDir, name + ".jar");
             
             try {

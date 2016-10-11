@@ -27,6 +27,7 @@ import org.python.util.PythonInterpreter;
 import android.R;
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.os.Handler;
@@ -43,17 +44,30 @@ import java.util.Properties;
 
 public class LaunchPyService extends Service {
 	Handler mHandler;
+	boolean isRunning;
+	
+	public static Context context;
+	
+	public String startReason;
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mHandler = new Handler();
+		LaunchPyService.context = this;
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (isRunning) {
+			return Service.START_REDELIVER_INTENT;
+		}
+		isRunning = true;
+		
 		// Foreground ourselves
 		startForeground(1, new NotificationCompat.Builder(this).setSmallIcon(R.drawable.ic_dialog_info).setContentTitle("PyAndroid").setContentText("PyAndroid is running.").build());
+		
+		startReason = intent.getExtras().getString("com.runassudo.pyandroid.START_REASON");
 		
 		try {
 			File mainfile = new File(Environment.getExternalStorageDirectory(), "PyAndroid/main.py");
@@ -117,6 +131,7 @@ public class LaunchPyService extends Service {
 	}
 	
 	public void appendLog(String text) {
+		Log.i("PyAndroid", text);
 		Intent localIntent = new Intent("com.runassudo.pyandroid.UPDATE_LOG").putExtra("com.runassudo.pyandroid.TEXT", text);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
 	}

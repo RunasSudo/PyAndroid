@@ -3,6 +3,7 @@
 	package="com.runassudo.pyandroid">
 	
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	
 	<application
 		android:name=".PyAndroidApplication"
@@ -20,6 +21,14 @@
 		</activity>
 		<service android:name=".LaunchPyService" android:exported="false"/>
 		<service android:name=".PyService" android:exported="true"/>
+		
+		<receiver
+			android:name=".StartOnBootReceiver"
+			android:label="StartOnBootReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
 	</application>
 
 </manifest>

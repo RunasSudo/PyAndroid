@@ -44,8 +44,7 @@ import android.widget.Toast;
 // Load dx.jar from Android SDK and gut dexer.Main
 
 public class MainActivity extends AppCompatActivity {
-	
-	public static Context context;
+	static Intent mServiceIntent;
 	
 	TextView script_log;
 	ScrollView script_log_scroll;
@@ -53,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		context = getApplicationContext();
 		
 		setContentView(R.layout.activity_main);
 		
@@ -64,7 +62,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 	
 	public void onStartButtonClick(View v) {
-		startMain();
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+			return;
+		}
+		
+		startMain(this, "manual");
 	}
 	
 	public void onStopButtonClick(View v) {
@@ -75,25 +78,19 @@ public class MainActivity extends AppCompatActivity {
 	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 		if (requestCode == 0) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				startMain();
+				startMain(this, "manual");
 			} else {
-				Toast.makeText(context, "Permission denied!", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Permission denied!", Toast.LENGTH_LONG).show();
 			}
 		}
 	}
 	
-	public void startMain() {
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
-			return;
-		}
-		
-		Intent mServiceIntent = new Intent(this, LaunchPyService.class);
-		startService(mServiceIntent);
+	public static void startMain(Context context, String reason) {
+		mServiceIntent = new Intent(context, LaunchPyService.class).putExtra("com.runassudo.pyandroid.START_REASON", reason);
+		context.startService(mServiceIntent);
 	}
 	
 	public void stopMain() {
-		Intent mServiceIntent = new Intent(this, LaunchPyService.class);
 		stopService(mServiceIntent);
 	}
 	
