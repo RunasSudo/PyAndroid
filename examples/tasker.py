@@ -44,7 +44,7 @@ def toIntent(func):
 	return Intent(__service__, PyService).putExtra('com.runassudo.pyandroid.CALLBACK', name)
 
 def toPendingIntent(func):
-	return PendingIntent.getService(__service__, 1, toIntent(func), PendingIntent.FLAG_CANCEL_CURRENT)
+	return PendingIntent.getService(__service__, hash(func), toIntent(func), PendingIntent.FLAG_CANCEL_CURRENT)
 
 def isBetween(cal, h1, m1, h2, m2):
 	if (cal.get(cal.HOUR_OF_DAY) < h1
