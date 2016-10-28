@@ -117,7 +117,7 @@ def profileSchool():
 
 # In order of priority, highest to lowest
 profiles = [
-	('School', lambda cal: isBetween(cal, 8, 20, 15, 20 if cal.get(cal.DAY_OF_WEEK) == cal.WEDNESDAY else 35), [(8, 20), (15, 35)], profileSchool),
+	('School', lambda cal: False if (cal.get(cal.DAY_OF_WEEK) == cal.SATURDAY or cal.get(cal.DAY_OF_WEEK) == cal.SUNDAY) else isBetween(cal, 8, 20, 15, 20 if cal.get(cal.DAY_OF_WEEK) == cal.WEDNESDAY else 35), [(8, 20), (15, 20), (15, 35)], profileSchool),
 	('Home', lambda cal: isBetween(cal, 7, 0, 23, 0), [(7, 0), (23, 0)], profileHome),
 	('Night', lambda cal: True, [], profileNight)
 ]
