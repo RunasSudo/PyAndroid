@@ -28,7 +28,7 @@ from android.support.v4.app import NotificationCompat
 from java.util import Calendar
 
 # Foreground ourselves to prevent being killed
-builder = NotificationCompat.Builder(__service__).setSmallIcon(R.drawable.ic_dialog_info).setContentTitle('PyAndroid').setContentText('PyAndroid is running.')
+builder = NotificationCompat.Builder(__service__).setSmallIcon(R.drawable.ic_dialog_info).setShowWhen(False).setContentTitle('PyAndroid').setContentText('PyAndroid is running.')
 __service__.startForeground(1, builder.build())
 
 def showToast(text, length='LENGTH_LONG'):
